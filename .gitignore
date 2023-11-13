@@ -3,4 +3,4 @@ db/app.sqlite
 db/test.sqlite
 .env
 .env.test
-dist
+build
