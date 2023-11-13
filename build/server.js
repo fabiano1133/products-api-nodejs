@@ -32,9 +32,9 @@ if (process.env.NODE_ENV === "test") {
 }
 var envSchema = import_zod.z.object({
   NODE_ENV: import_zod.z.enum(["development", "production", "test"]).default("development"),
-  DATABASE_CLIENT: import_zod.z.string(),
+  DATABASE_CLIENT: import_zod.z.enum(["sqlite", "pg"]),
   DATABASE_URL: import_zod.z.string(),
-  APP_HTTP_PORT: import_zod.z.number().default(8080)
+  APP_HTTP_PORT: import_zod.z.coerce.number().default(8181)
 });
 var _env = envSchema.safeParse(process.env);
 if (_env.success === false) {
@@ -53,9 +53,9 @@ var import_node_crypto = __toESM(require("crypto"));
 var import_knex = require("knex");
 var config2 = {
   client: env.DATABASE_CLIENT,
-  connection: {
+  connection: env.DATABASE_CLIENT === "sqlite" ? {
     filename: env.DATABASE_URL
-  },
+  } : env.DATABASE_URL,
   useNullAsDefault: true,
   migrations: {
     extension: "ts",
@@ -108,7 +108,8 @@ app.register(ProductsRoutes, {
 
 // src/server.ts
 app.listen({
-  port: env.APP_HTTP_PORT
+  port: env.APP_HTTP_PORT,
+  host: "RENDER" in process.env ? "0.0.0.0" : "localhost"
 }).then(() => {
   console.log(`WEB APPLICATION IS RUNNING`);
 });

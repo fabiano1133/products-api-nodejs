@@ -32,9 +32,9 @@ if (process.env.NODE_ENV === "test") {
 }
 var envSchema = import_zod.z.object({
   NODE_ENV: import_zod.z.enum(["development", "production", "test"]).default("development"),
-  DATABASE_CLIENT: import_zod.z.string(),
+  DATABASE_CLIENT: import_zod.z.enum(["sqlite", "pg"]),
   DATABASE_URL: import_zod.z.string(),
-  APP_HTTP_PORT: import_zod.z.number().default(8080)
+  APP_HTTP_PORT: import_zod.z.coerce.number().default(8181)
 });
 var _env = envSchema.safeParse(process.env);
 if (_env.success === false) {
